@@ -209,6 +209,9 @@ __marimo__/
 
 vision/video_0/
 vision/yolo_dataset/
+vision/runs/
+runs/
+
 *.png
 *.jpg
 *.mp4

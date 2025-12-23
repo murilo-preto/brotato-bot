@@ -20,7 +20,7 @@ def train_yolo_model():
     # Choose YOLO model (options: yolov8n, yolov8s, yolov8m, yolov8l, yolov8x)
     model_name = "yolov8s.pt"  # Small model for faster training
     
-    print(f"\n🚀 Starting training with {model_name}...")
+    print(f"\nStarting training with {model_name}...")
     
     # Load a pretrained model
     model = YOLO(model_name)
@@ -37,7 +37,6 @@ def train_yolo_model():
         name='yolo_training',              # experiment name
         exist_ok=True,                     # overwrite existing experiment
         verbose=True,                      # print progress
-        # Additional parameters (optional):
         lr0=0.01,                          # initial learning rate
         lrf=0.01,                          # final learning rate
         momentum=0.937,                    # SGD momentum
@@ -63,14 +62,14 @@ def train_yolo_model():
         copy_paste=0.0,                    # segment copy-paste (probability)
     )
     
-    print("✅ Training completed!")
+    print("Training completed!")
     return results
 
 def evaluate_model(model_path='runs/detect/yolo_training/weights/best.pt'):
     """
     Evaluate trained model
     """
-    print("\n📊 Evaluating model...")
+    print("\nEvaluating model...")
     
     model = YOLO(model_path)
     
@@ -92,7 +91,7 @@ def predict_on_sample(model_path='runs/detect/yolo_training/weights/best.pt'):
     """
     Run inference on sample images
     """
-    print("\n🎯 Running inference on sample images...")
+    print("\nRunning inference on sample images...")
     
     model = YOLO(model_path)
     
@@ -131,15 +130,10 @@ def predict_on_sample(model_path='runs/detect/yolo_training/weights/best.pt'):
     return results
 
 if __name__ == '__main__':
-    # Train the model
     train_results = train_yolo_model()
-    
-    # Evaluate the model
     eval_results = evaluate_model()
-    
-    # Run inference
     predict_results = predict_on_sample()
     
-    print("\n✅ All tasks completed!")
+    print("\nAll tasks completed!")
     print(f"Model saved in: runs/detect/yolo_training/")
     print(f"Best weights: runs/detect/yolo_training/weights/best.pt")
