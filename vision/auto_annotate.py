@@ -191,12 +191,10 @@ class AutoAnnotator:
         """
         print(f"\n📁 Processing folder: {input_folder}")
         
-        # Get all image files
-        image_extensions = ['.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.webp']
-        image_files = []
-        for ext in image_extensions:
-            image_files.extend(Path(input_folder).glob(f'*{ext}'))
-            image_files.extend(Path(input_folder).glob(f'*{ext.upper()}'))
+        # Get all image files (case-insensitive) and avoid duplicates on case-insensitive filesystems
+        image_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.webp'}
+        # Iterate directory entries once and filter by suffix.lower() to prevent duplicate matches
+        image_files = [p for p in sorted(Path(input_folder).iterdir()) if p.is_file() and p.suffix.lower() in image_extensions]
         
         if not image_files:
             print(f"❌ No images found in {input_folder}")
@@ -299,19 +297,20 @@ class AutoAnnotator:
         # Add categories
         for class_id, class_name in self.class_names.items():
             coco_data['categories'].append({
-                'id': class_id,
+                'id': class_id + 1,
                 'name': class_name,
                 'supercategory': ''
             })
         
         # Add images and annotations
-        annotation_id = 0
+        annotation_id = 1
         for img_idx, result in enumerate(results):
             img_info = result['image_info']
+            image_id = img_idx + 1  # Start image IDs from 1 instead of 0
             
             # Add image
             coco_data['images'].append({
-                'id': img_idx,
+                'id': image_id,
                 'file_name': img_info['file_name'],
                 'width': img_info['width'],
                 'height': img_info['height'],
@@ -323,8 +322,8 @@ class AutoAnnotator:
             for det in result['detections']:
                 coco_data['annotations'].append({
                     'id': annotation_id,
-                    'image_id': img_idx,
-                    'category_id': det['class_id'],
+                    'image_id': image_id,
+                    'category_id': det['class_id'] + 1,
                     'bbox': det['bbox'],
                     'area': det['area'],
                     'segmentation': [],  # Empty for bounding boxes
