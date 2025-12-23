@@ -205,3 +205,11 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+vision/video_0/
+vision/yolo_dataset/
+*.png
+*.jpg
+*.mp4
+*.pt
