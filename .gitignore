@@ -207,10 +207,12 @@ marimo/_lsp/
 __marimo__/
 
 
-vision/video_0/
-vision/yolo_dataset/
-vision/runs/
+src/vision/video_0/
+src/vision/yolo_dataset/
+src/yolo_dataset/
+src/vision/runs/
 runs/
+
 
 *.png
 *.jpg
