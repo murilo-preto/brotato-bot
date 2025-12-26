@@ -52,7 +52,7 @@ class ImageDetector:
 
 if __name__ == "__main__":
     detector = ImageDetector(
-        model_path=r'vision\runs\detect\yolo_training\weights\last.pt',
+        model_path=r'runs\detect\yolo_training\weights\last.pt',
         confidence_threshold=0.25,
         iou_threshold=0.45,
         device='cuda'
@@ -90,12 +90,12 @@ if __name__ == "__main__":
                     verbose=False
                 )
 
-                print(format_results(results, class_names=detector.class_names, conf_threshold=detector.conf_threshold))
+                #print(format_results(results, class_names=detector.class_names, conf_threshold=detector.conf_threshold))
 
-                # try:
-                #     render_boxes(overlay_np, results=results, class_names=detector.class_names, window_name='Detections', wait=1)
-                # except Exception as e:
-                #     print(f"Error rendering boxes: {e}")
+                try:
+                    render_boxes(overlay_np, results=results, class_names=detector.class_names, window_name='Detections', wait=1)
+                except Exception as e:
+                    print(f"Error rendering boxes: {e}")
             
             listener.stop()
         

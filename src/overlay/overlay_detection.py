@@ -63,29 +63,52 @@ def capture_overlay(game_window=None, region=None):
         PIL Image object of the captured region
     """
     sct = mss.mss()
-    
+
+    # Build region from window or monitors and ensure integer values
     if region is None:
         if game_window:
-            region = {
-                'left': game_window.left,
-                'top': game_window.top,
-                'width': game_window.width,
-                'height': game_window.height
-            }
+            left = int(game_window.left)
+            top = int(game_window.top)
+            width = int(game_window.width)
+            height = int(game_window.height)
         else:
             monitor = sct.monitors[1]
-            region = {
-                'left': monitor['left'],
-                'top': monitor['top'],
-                'width': monitor['width'],
-                'height': monitor['height']
-            }
-    
-    screenshot = sct.grab(region)
-    
-    image = Image.frombytes('RGB', screenshot.size, screenshot.rgb)
-    
-    return image
+            left = int(monitor['left'])
+            top = int(monitor['top'])
+            width = int(monitor['width'])
+            height = int(monitor['height'])
+
+        region = {'left': left, 'top': top, 'width': width, 'height': height}
+
+    # Sanitize region values
+    region['left'] = int(region.get('left', 0))
+    region['top'] = int(region.get('top', 0))
+    region['width'] = max(1, int(region.get('width', 1)))
+    region['height'] = max(1, int(region.get('height', 1)))
+
+    # Try primary MSS capture, then fall back to PIL.ImageGrab, else return a blank image
+    try:
+        screenshot = sct.grab(region)
+        image = Image.frombytes('RGB', screenshot.size, screenshot.rgb)
+        return image
+    except Exception as e:
+        print(f"mss capture failed: {e}. Trying fallback capture methods.")
+        try:
+            # PIL's ImageGrab is sometimes more tolerant in different environments
+            from PIL import ImageGrab
+            bbox = (
+                region['left'],
+                region['top'],
+                region['left'] + region['width'],
+                region['top'] + region['height']
+            )
+            pil_img = ImageGrab.grab(bbox=bbox)
+            return pil_img.convert('RGB')
+        except Exception as e2:
+            print(f"PIL fallback failed: {e2}. Returning blank image of requested size.")
+            w = region['width']
+            h = region['height']
+            return Image.new('RGB', (w, h), (0, 0, 0))
 
 if __name__ == "__main__":
     game_window = select_game_window("Brotato")
